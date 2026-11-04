@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Техника смелости — ИИ-тренер, который бережёт твоё тело</title>
+  <meta name="description" content="Персональные женские тренировки с ИИ-тренером. Контроль техники по камере, учёт биометрии, безопасность и приватность. Скачай приложение «Техника смелости».">
+  <meta property="og:title" content="Техника смелости — смелость это техника">
+  <meta property="og:description" content="ИИ следит за техникой, бережёт суставы и заменяет тренера в телефоне.">
+  <meta property="og:type" content="website">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ================= ПЕРЕМЕННЫЕ И ТОКЕНЫ ================= */
+    :root {
+      --font-display: 'Unbounded', system-ui, sans-serif;
+      --font-body: 'Manrope', system-ui, sans-serif;
+
+      /* Строго 3 цвета */
+      --c-pink: #ff2a7a;
+      --c-violet: #7f00ff;
+      --c-ink: #12001a;
+
+      /* Светлая тема */
+      --bg: #fff0f5;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --text-main: var(--c-ink);
+      --text-muted: #552b66;
+      --border: rgba(127, 0, 255, 0.2);
+      
+      --radius: 24px;
+      --shadow: 0 12px 30px -10px rgba(18, 0, 26, 0.15);
+      --shadow-hover: 0 20px 40px -10px rgba(255, 42, 122, 0.3);
+      --blur: blur(16px);
+      --header-h: 70px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--c-ink);
+        --bg-card: rgba(30, 0, 45, 0.7);
+        --text-main: #ffffff;
+        --text-muted: #c7a6d6;
+        --border: rgba(255, 42, 122, 0.3);
+      }
+    }
+
+    /* ================= БАЗА ================= */
+    *, *::before, *::after { box-sizing: border-box; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--header-h) + 20px);
+    }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.6;
+      color: var(--text-main);
+      background-color: var(--bg);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 0 0 16px 0;
+      letter-spacing: -0.02em;
+    }
+    p { margin: 0 0 16px 0; }
+    a { color: inherit; }
+    img, video, svg { display: block; max-width: 100%; }
+    
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 5vw, 32px);
+    }
+    
+    section {
+      padding: clamp(60px, 10vw, 120px) 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Темные и светлые секции для контраста */
+    .bg-light { background: var(--bg); }
+    .bg-dark {
+      background: var(--c-ink);
+      color: #ffffff;
+      --text-main: #ffffff;
+      --text-muted: #d1b3e0;
+      --bg-card: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 42, 122, 0.4);
+    }
+
+    /* Размытые границы элементов */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--c-pink);
+    }
+
+    /* ================= КНОПКИ ================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 28px;
+      border-radius: 99px;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--c-pink), var(--c-violet));
+      color: #fff;
+      box-shadow: 0 8px 20px -6px rgba(255, 42, 122, 0.6);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 24px -6px rgba(255, 42, 122, 0.8);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-main);
+      border: 2px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--c-pink);
+      color: var(--c-pink);
+    }
+    :focus-visible { outline: 3px solid var(--c-pink); outline-offset: 4px; }
+
+    /* ================= ШАПКА ================= */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 240, 245, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding-top: env(safe-area-inset-top);
+    }
+    @media (prefers-color-scheme: dark) {
+      .header { background: rgba(18, 0, 26, 0.8); }
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--header-h);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--c-pink), var(--c-violet));
+      border-radius: 10px;
+      display: grid; place-items: center;
+      color: white; font-size: 14px;
+    }
+    .nav-links {
+      display: none;
+      gap: 24px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--c-pink); }
+    
+    .header-actions { display: none; gap: 12px; }
+    
+    .burger {
+      display: block;
+      width: 44px; height: 44px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      z-index: 101;
+    }
+    .burger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text-main);
+      margin: 5px auto;
+      transition: 0.3s;
+      border-radius: 2px;
+    }
+    .burger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.active span:nth-child(2) { opacity: 0; }
+    .burger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed;
+      top: calc(var(--header-h) + env(safe-area-inset-top));
+      left: 0; right: 0; bottom: 0;
+      background: var(--bg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99;
+    }
+    .mobile-menu.open { transform: translateX(0); }
+    .mobile-menu a {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      text-decoration: none;
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--bg-card);
+      text-align: center;
+    }
+
+    @media (min-width: 900px) {
+      .nav-links, .header-actions { display: flex; }
+      .burger, .mobile-menu { display: none; }
+    }
+
+    /* ================= HERO ================= */
+    .hero { padding-top: clamp(40px, 8vw, 80px); }
+    .hero-grid {
+      display: grid;
+      gap: 40px;
+      align-items: center;
+    }
+    @media (min-width: 992px) {
+      .hero-grid { grid-template-columns: 1fr 1fr; }
+    }
+    
+    .hero-title {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      line-height: 1.05;
+    }
+    .text-grad {
+      background: linear-gradient(135deg, var(--c-pink), var(--c-violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: 32px;
+    }
+    .hero-sub::before {
+      content: '';
+      width: 24px; height: 24px;
+      background: linear-gradient(135deg, var(--c-pink), var(--c-violet));
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .video-wrapper {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border);
+    }
+    .video-wrapper video {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      background: var(--c-ink);
+    }
+
+    /* Деталь: Анимированный силуэт */
+    .silhouette { position: absolute; right: -50px; top: -50px; width: 300px; opacity: 0.15; pointer-events: none; }
+    @keyframes pulse { 0%, 100% { r: 6; opacity: 0.5; } 50% { r: 10; opacity: 1; } }
+    .silhouette circle { animation: pulse 3s infinite alternate; fill: var(--c-pink); }
+
+    /* ================= ПРЕИМУЩЕСТВА ================= */
+    .cards-grid {
+      display: grid;
+      gap: 20px;
+    }
+    @media (min-width: 768px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .cards-grid { grid-template-columns: repeat(4, 1fr); } }
+    
+    .card { padding: 32px 24px; }
+    .card-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--c-pink), var(--c-violet));
+      color: white;
+      display: grid; place-items: center;
+      margin-bottom: 20px;
+    }
+    .card-icon svg { width: 28px; height: 28px; }
+
+    /* ================= ТАРИФЫ ================= */
+    .pricing-grid {
+      display: grid;
+      gap: 24px;
+    }
+    @media (min-width: 768px) { .pricing-grid { grid-template-columns: repeat(3, 1fr); } }
+    
+    .price-card {
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .price-card.featured {
+      border: 2px solid var(--c-pink);
+      box-shadow: var(--shadow-hover);
+    }
+    .price-badge {
+      position: absolute;
+      top: -14px; left: 32px;
+      background: var(--c-pink);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+    .price-val {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 16px 0;
+    }
+    .price-val span { font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: var(--text-muted); }
+    .price-list { list-style: none; padding: 0; margin: 0 0 32px 0; display: grid; gap: 12px; }
+    .price-list li { display: flex; gap: 12px; font-size: 0.95rem; }
+    .price-list li::before { content: '✓'; color: var(--c-pink); font-weight: bold; }
+
+    /* ================= СЕКЦИЯ ДО/ПОСЛЕ И ЦИТАТА ================= */
+    .ba-grid { display: grid; gap: 20px; grid-template-columns: 1fr 1fr; margin-bottom: 40px; }
+    @media (max-width: 600px) { .ba-grid { grid-template-columns: 1fr; } }
+    
+    .ba-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .ba-img {
+      aspect-ratio: 4/5;
+      display: grid; place-items: center;
+      position: relative;
+    }
+    /* Заглушки до/после */
+    .ba-before { background: linear-gradient(160deg, #2b1638, #4a2559); }
+    .ba-after { background: linear-gradient(160deg, var(--c-violet), var(--c-pink)); }
+    .ba-img span {
+      position: absolute; top: 16px; left: 16px;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      padding: 6px 12px; border-radius: 8px;
+      font-size: 0.8rem; font-weight: bold; color: white;
+    }
+    .ba-text { padding: 16px; font-size: 0.9rem; }
+
+    .quote-box {
+      padding: 32px;
+      border-radius: var(--radius);
+      border-left: 6px solid var(--c-pink);
+      background: var(--bg-card);
+    }
+    .quote-box blockquote { margin: 0; font-size: 1.1rem; font-weight: 700; font-style: italic; }
+    .quote-box cite { display: block; margin-top: 16px; font-size: 0.9rem; font-style: normal; color: var(--text-muted); }
+
+    /* ================= FAQ ================= */
+    .faq-list { display: grid; gap: 12px; max-width: 800px; margin: 0 auto; }
+    details {
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 0 24px;
+      transition: all 0.3s;
+    }
+    details[open] { border-color: var(--c-pink); }
+    summary {
+      padding: 20px 0;
+      font-weight: 800;
+      cursor: pointer;
+      list-style: none;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; color: var(--c-pink); font-size: 1.5rem; transition: transform 0.3s; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { color: var(--text-muted); padding-bottom: 20px; margin: 0; }
+
+    /* ================= FOOTER ================= */
+    .footer { padding: 40px 0; background: var(--c-ink); color: #fff; }
+    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: center; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-links a { font-weight: 700; text-decoration: none; font-size: 0.9rem; }
+    .footer-links a:hover { color: var(--c-pink); }
+    
+    .store-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+    .store-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      text-decoration: none; color: #fff;
+      transition: 0.2s;
+    }
+    .store-btn:hover { border-color: var(--c-pink); background: rgba(255, 42, 122, 0.1); }
+    .store-btn svg { width: 24px; height: 24px; }
+    .store-btn div { text-align: left; line-height: 1.1; }
+    .store-btn small { font-size: 0.65rem; display: block; color: #a0a0a0; }
+    .store-btn strong { font-size: 0.9rem; display: block; }
+    .copyright { margin-top: 24px; font-size: 0.8rem; color: #888; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+    
+    /* ================= АНИМАЦИИ (REVEAL) ================= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal[data-delay="1"] { transition-delay: 0.1s; }
+    .reveal[data-delay="2"] { transition-delay: 0.2s; }
+    .reveal[data-delay="3"] { transition-delay: 0.3s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .silhouette circle { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ШАПКА -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon">Λ</div>
+        Техника смелости
+      </a>
+      
+      <nav class="nav-links">
+        <a href="#how">Как работает</a>
+        <a href="#pricing">Тарифы</a>
+      </nav>
+      
+      <div class="header-actions">
+        <a href="#login" class="btn btn-outline">Войти</a>
+        <a href="#download" class="btn btn-primary">Скачать приложение</a>
+      </div>
+      
+      <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    
+    <!-- Мобильное меню -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#how">Как работает</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#login">Войти</a>
+      <a href="#download" class="btn btn-primary" style="border: none;">Скачать</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero bg-light" id="download">
+      <!-- Анимированный силуэт (деталь) -->
+      <svg class="silhouette" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 40 v90 M100 130 l-40 60 M100 130 l40 60 M100 130 v80" stroke="#ff2a7a" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="100" cy="35" r="15" />
+        <circle cx="55" cy="195" r="10" />
+        <circle cx="145" cy="195" r="10" />
+        <circle cx="100" cy="215" r="12" />
+      </svg>
+
+      <div class="container hero-grid">
+        <div class="reveal">
+          <h1 class="hero-title">
+            Не «идеальное тело».<br>
+            <span class="text-grad">Твоя техника — твоя сила.</span>
+          </h1>
+          <p class="hero-sub">ИИ-тренер смотрит в камеру и бережёт твои суставы</p>
+          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <a href="#download" class="btn btn-primary">Скачать приложение</a>
+            <a href="#how" class="btn btn-outline">Узнать больше</a>
+          </div>
+          <p style="margin-top: 24px; font-size: 0.8rem; opacity: 0.7;">Приложение не заменяет консультацию врача. Результаты индивидуальны.</p>
+        </div>
+        
+        <div class="reveal" data-delay="2">
+          <div class="video-wrapper">
+            <!-- ЗАМЕНИТЬ: src="video/demo.mp4" и poster на реальные файлы -->
+            <video controls playsinline preload="metadata" poster="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'><rect width='1600' height='900' fill='%2312001a'/><circle cx='800' cy='450' r='150' fill='none' stroke='%23ff2a7a' stroke-width='20'/><path d='M750 380 l100 70 l-100 70 z' fill='%237f00ff'/></svg>">
+              <source src="video/demo.mp4" type="video/mp4">
+              Ваш браузер не поддерживает видео.
+            </video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- О ПРОЕКТЕ / ПРЕИМУЩЕСТВА (Темная) -->
+    <section class="bg-dark" id="how">
+      <div class="container">
+        <div class="reveal" style="max-width: 600px; margin-bottom: 40px;">
+          <h2>Фитнес без страха</h2>
+          <p style="color: var(--text-muted);">ИИ анализирует биометрию и камеру, чтобы защитить от травм и заменить тренера в телефоне. Коротко, по делу и без давления.</p>
+        </div>
+        
+        <div class="cards-grid">
+          <div class="glass-card card reveal" data-delay="0">
+            <div class="card-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg>
+            </div>
+            <h3>Контроль углов</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">ИИ следит за суставами и подсказывает, когда замедлиться.</p>
+          </div>
+          
+          <div class="glass-card card reveal" data-delay="1">
+            <div class="card-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            </div>
+            <h3>Твой ритм</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Учитывает биометрию и уровень подготовки без сравнений.</p>
+          </div>
+          
+          <div class="glass-card card reveal" data-delay="2">
+            <div class="card-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg>
+            </div>
+            <h3>Без инвентаря</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Только вес твоего тела и пространство перед камерой.</p>
+          </div>
+          
+          <div class="glass-card card reveal" data-delay="3">
+            <div class="card-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3>Приватность</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Видео обрабатывается на устройстве. Только ты и ИИ.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ТАРИФЫ (Светлая) -->
+    <section class="bg-light" id="pricing">
+      <div class="container">
+        <div class="reveal" style="text-align: center; max-width: 600px; margin: 0 auto 40px;">
+          <h2>Выбери свой формат</h2>
+          <p style="color: var(--text-muted);">Прозрачные условия. Начни бесплатно.</p>
+        </div>
+        
+        <div class="pricing-grid">
+          <!-- Тариф 1 -->
+          <div class="glass-card price-card reveal" data-delay="0">
+            <h3>Free</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Для знакомства</p>
+            <div class="price-val">0 ₽<span>/мес</span></div>
+            <ul class="price-list">
+              <li>Демо-тренировки</li>
+              <li>Базовый контроль камеры</li>
+              <li>1 программа</li>
+            </ul>
+            <!-- ЗАМЕНИТЬ: ссылка на регистрацию/скачивание -->
+            <a href="#download" class="btn btn-outline" style="margin-top: auto;">Выбрать</a>
+          </div>
+          
+          <!-- Тариф 2 -->
+          <div class="glass-card price-card featured reveal" data-delay="1">
+            <div class="price-badge">Рекомендуем</div>
+            <h3>Premium</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Полный ИИ-тренер</p>
+            <div class="price-val">990 ₽<span>/мес</span></div>
+            <ul class="price-list">
+              <li>Безлимит тренировок</li>
+              <li>Разбор техники по 20+ параметрам</li>
+              <li>Адаптация под биометрию</li>
+            </ul>
+            <!-- ЗАМЕНИТЬ: ссылка на оплату -->
+            <a href="#download" class="btn btn-primary" style="margin-top: auto;">Выбрать</a>
+          </div>
+          
+          <!-- Тариф 3 -->
+          <div class="glass-card price-card reveal" data-delay="2">
+            <h3>Premium + Expert</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">С поддержкой</p>
+            <div class="price-val">2900 ₽<span>/мес</span></div>
+            <ul class="price-list">
+              <li>Всё из Premium</li>
+              <li>Живой нутрициолог</li>
+              <li>Разбор питания раз в неделю</li>
+            </ul>
+            <!-- ЗАМЕНИТЬ: ссылка на оплату -->
+            <a href="#download" class="btn btn-outline" style="margin-top: auto;">Выбрать</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ОТЗЫВЫ И ДО/ПОСЛЕ (Темная) -->
+    <section class="bg-dark">
+      <div class="container">
+        <h2 class="reveal" style="text-align: center; margin-bottom: 40px;">Реальные изменения</h2>
+        
+        <div class="ba-grid">
+          <div class="reveal" data-delay="0">
+            <div class="ba-card">
+              <div class="ba-img ba-before">
+                <span>До</span>
+                <!-- Заглушка -->
+                <svg width="80" height="80" fill="none" stroke="#fff" stroke-width="2" opacity="0.3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div class="ba-text">Спина ровнее, поясница не болит</div>
+            </div>
+          </div>
+          
+          <div class="reveal" data-delay="1">
+            <div class="ba-card">
+              <div class="ba-img ba-after">
+                <span>После</span>
+                <!-- Заглушка -->
+                <svg width="80" height="80" fill="none" stroke="#fff" stroke-width="2" opacity="0.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div class="ba-text">Уверенность в каждом движении</div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align: center; font-size: 0.8rem; opacity: 0.6; margin-bottom: 40px;">Результаты индивидуальны и зависят от регулярности занятий.</p>
+
+        <!-- Цитата -->
+        <div class="quote-box reveal">
+          <blockquote>«Правильная биомеханика — это не про то, как ты выглядишь, а про то, как ты чувствуешь себя на следующий день. ИИ помогает выстроить безопасный коридор движений».</blockquote>
+          <!-- ЗАМЕНИТЬ: Реальное имя и специальность -->
+          <cite>— [Имя Фамилия, специальность]</cite>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ (Светлая) -->
+    <section class="bg-light" id="faq">
+      <div class="container">
+        <h2 class="reveal" style="text-align: center; margin-bottom: 40px;">Частые вопросы</h2>
+        <div class="faq-list">
+          <details class="reveal">
+            <summary>Куда уходит видео с камеры?</summary>
+            <p>Обработка происходит локально на устройстве. Видео не сохраняется и не передается на серверы.</p>
+          </details>
+          <details class="reveal">
+            <summary>Подойдет ли новичкам?</summary>
+             <summary>Подойдет ли новичкам?</summary>
+            <p>Да, ИИ подбирает нагрузку с нуля и следит за техникой, чтобы исключить риск травм.</p>
+          </details>
+          <details class="reveal">
+            <summary>Нужен ли спортзал или инвентарь?</summary>
+            <p>Нет. Большинство программ рассчитаны на тренировки дома без дополнительного оборудования.</p>
+          </details>
+          <details class="reveal">
+            <summary>Можно ли отменить подписку?</summary>
+            <p>Да, в любой момент в настройках профиля. Доступ сохранится до конца оплаченного периода.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="#">Блог</a>
+          <a href="#">Политика конфиденциальности</a>
+          <a href="#">Чат поддержки</a>
+        </div>
+        
+        <div class="store-badges">
+          <a href="#" class="store-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+            <div><small>Загрузить в</small><strong>App Store</strong></div>
+          </a>
+          <a href="#" class="store-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.197 12l2.5-2.491zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z"/></svg>
+            <div><small>Доступно в</small><strong>Google Play</strong></div>
+          </a>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2026 «Техника смелости». Приложение не заменяет консультацию врача. Результаты индивидуальны.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 1. Бургер-меню
+    const burger = document.getElementById('burger');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    burger.addEventListener('click', () => {
+      const isExpanded = burger.getAttribute('aria-expanded') === 'true';
+      burger.setAttribute('aria-expanded', !isExpanded);
+      burger.classList.toggle('active');
+      mobileMenu.classList.toggle('open');
+    });
+
+    // Закрытие меню при клике на ссылку
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        burger.setAttribute('aria-expanded', 'false');
+        burger.classList.remove('active');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // 2. Плавное появление при скролле (Intersection Observer)
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.15
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target); // Отключаем наблюдение после появления
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

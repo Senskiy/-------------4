@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Техника смелости — ИИ-тренер для женщин</title>
+<meta name="description" content="ИИ-тренер в телефоне следит за техникой и бережёт от травм. Тренировки дома, без инвентаря, только вы и ИИ.">
+<meta property="og:title" content="Техника смелости — ИИ-тренер для женщин">
+<meta property="og:description" content="Ты сильнее, чем думаешь. Просто начни.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Philosopher:wght@700&display=swap" rel="stylesheet">
+<style>
+/* Только три цвета: тёмный сливовый, розовый, светлая сирень */
+:root{--dark:#2a1258;--pink:#ff5ca8;--light:#f7f0ff;
+  --head:"Philosopher",Georgia,"Times New Roman",serif;--sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --pad:clamp(3rem,7vw,5.5rem);--cut:36px;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+.t-light{--bg:var(--light);--fg:var(--dark);--card:color-mix(in srgb,var(--dark) 7%,var(--light));--muted:color-mix(in srgb,var(--dark) 74%,var(--light));--line:color-mix(in srgb,var(--dark) 16%,transparent);--btn-bg:var(--pink);--btn-fg:var(--dark);--ico-bg:var(--dark);--ico-fg:var(--pink)}
+.t-dark{--bg:var(--dark);--fg:var(--light);--card:color-mix(in srgb,var(--light) 9%,var(--dark));--muted:color-mix(in srgb,var(--light) 80%,var(--dark));--line:color-mix(in srgb,var(--light) 22%,transparent);--btn-bg:var(--pink);--btn-fg:var(--dark);--ico-bg:var(--pink);--ico-fg:var(--dark)}
+.t-pink{--bg:var(--pink);--fg:var(--dark);--card:color-mix(in srgb,var(--light) 24%,var(--pink));--muted:color-mix(in srgb,var(--dark) 84%,var(--pink));--line:color-mix(in srgb,var(--dark) 30%,transparent);--btn-bg:var(--dark);--btn-fg:var(--light);--ico-bg:var(--dark);--ico-fg:var(--pink)}
+.t-light,.t-dark,.t-pink{background:var(--bg);color:var(--fg)}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(72px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--dark);color:var(--dark);font:700 1.0625rem/1.6 var(--sans);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--dark);z-index:60}
+svg,video{max-width:100%}
+h1,h2,h3{font-family:var(--head);font-weight:700;line-height:1.1;margin:0 0 .5em}
+h2{font-size:clamp(2rem,5vw,3.2rem)}
+h2::after{content:"";display:block;width:64px;height:6px;border-radius:6px;background:var(--pink);margin-top:.45em}
+.center{text-align:center}.center h2::after{margin-inline:auto}
+h3{font-size:1.45rem}
+p{margin:0 0 1em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--pink);outline-offset:3px;border-radius:8px}
+.wrap{width:min(1160px,100% - 2.5rem);margin-inline:auto;position:relative;z-index:1}
+.layer{position:relative;overflow:clip;margin-top:calc(var(--cut) * -1);border-radius:var(--cut) var(--cut) 0 0;padding:calc(var(--pad) + var(--cut)) 0 var(--pad)}
+.lead{font-size:1.15rem;color:var(--muted);max-width:46ch}
+.sec-head{margin-bottom:2.2rem}
+.progress{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;height:4px;z-index:70;transform-origin:0 50%;transform:scaleX(0);background:var(--pink)}
+
+/* кнопки */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:.7rem 1.7rem;border-radius:999px;font:800 1rem var(--sans);text-decoration:none;cursor:pointer;border:2px solid var(--btn-bg);background:var(--btn-bg);color:var(--btn-fg);transition:transform .25s,box-shadow .25s}
+.btn:hover{transform:translateY(-3px);box-shadow:0 10px 24px color-mix(in srgb,var(--pink) 45%,transparent)}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--pink)}
+.btn-block{width:100%}
+
+/* шапка */
+header,header.t-dark,header.t-light,header.t-pink{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:2px solid var(--fg);transition:background .4s,color .4s,border-color .4s}
+header.t-pink .pill{background:color-mix(in srgb,var(--dark) 14%,transparent);border-color:var(--dark)}
+header.t-pink .logo svg{color:var(--dark)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:68px}
+.logo{display:flex;align-items:center;gap:.6rem;font:700 1.35rem var(--head);text-decoration:none}
+.logo svg{width:36px;height:36px;color:var(--pink);flex:none;transition:transform .6s}
+.logo:hover svg{transform:rotate(180deg)}
+.menu{display:flex;align-items:center;gap:.4rem;position:relative}
+.pill{position:absolute;top:50%;left:0;width:0;height:44px;transform:translateY(-50%);border-radius:999px;background:color-mix(in srgb,var(--pink) 22%,transparent);border:1px solid color-mix(in srgb,var(--pink) 65%,transparent);opacity:0;pointer-events:none;transition:left .4s cubic-bezier(.3,1.35,.5,1),width .4s cubic-bezier(.3,1.35,.5,1),opacity .25s}
+.menu a.link{position:relative;z-index:1;padding:.6rem 1rem;border-radius:999px;text-decoration:none;font-weight:700;color:var(--muted);transition:color .2s}
+.menu a.link:hover,.menu a.link.on{color:var(--fg)}
+.menu .btn{min-height:44px;padding:.45rem 1.2rem}
+.burger{display:none;width:48px;height:48px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;place-items:center}
+.burger svg{width:22px;height:22px}
+
+/* hero */
+.hero{padding:clamp(2rem,5vw,3.5rem) 0 calc(var(--pad) + var(--cut) + 1rem);text-align:center;position:relative;overflow:clip}
+.quote{font-size:clamp(2.8rem,9.6vw,6rem);line-height:1;letter-spacing:-.02em;max-width:14ch;margin:0 auto .4em;text-wrap:balance}
+.quote>span{display:block}.l1{color:var(--light)}.l2{color:var(--pink);text-shadow:0 0 44px color-mix(in srgb,var(--pink) 45%,transparent)}
+.emblem{display:grid;justify-items:center;gap:.5rem;margin-bottom:1.6rem}
+.emblem svg{width:clamp(130px,24vw,190px);color:var(--pink);animation:spin 70s linear infinite;filter:drop-shadow(0 0 30px color-mix(in srgb,var(--pink) 55%,transparent))}
+.emblem span{font:700 1.25rem var(--head);letter-spacing:.08em;color:var(--light)}
+.by{font-weight:800;letter-spacing:.03em;margin-bottom:1rem}
+.hero .lead{margin-inline:auto}
+.btn-row{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin:1.5rem 0 0}
+.stage{position:relative;max-width:1000px;margin:2.6rem auto 0;border:5px solid var(--dark);border-radius:30px;overflow:hidden;box-shadow:12px 12px 0 var(--pink)}
+.stage video,.vcard video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--dark)}
+.chip{position:absolute;top:1rem;padding:.4rem .9rem;border-radius:999px;background:var(--light);color:var(--dark);font-weight:800;font-size:.85rem;animation:float 4s ease-in-out infinite}
+.c1{left:1rem}.c2{right:1rem;animation-delay:1.4s}
+@keyframes float{50%{transform:translateY(-6px)}}
+.deco{position:absolute;z-index:0;animation:spin 48s linear infinite;pointer-events:none}
+.d1{width:190px;left:-70px;bottom:6%;color:var(--pink)}
+.d2{width:250px;right:-100px;bottom:12%;color:var(--light);opacity:.08}
+.d3{width:84px;right:7%;bottom:2%;color:var(--pink);animation-duration:30s}
+[data-parallax]{will-change:transform}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* лента */
+.band{padding:calc(var(--cut) + 1.4rem) 0 1.8rem;display:grid;gap:.6rem}
+.row{display:flex;align-items:center;gap:1.4rem;width:max-content;margin-left:-900px;font:700 clamp(2.4rem,7vw,5rem)/1.1 var(--head);white-space:nowrap;will-change:transform}
+.row svg{width:.7em;height:.7em;flex:none}
+.row.alt{color:transparent;-webkit-text-stroke:2px var(--dark)}
+
+/* иконки */
+.ico{width:76px;height:76px;border-radius:50%;background:var(--ico-bg);color:var(--ico-fg);display:grid;place-items:center;margin-bottom:1.1rem;opacity:0;transform:translateY(46px) scale(.3) rotate(-30deg);transition:transform .9s cubic-bezier(.34,1.56,.64,1),opacity .5s;transition-delay:calc(var(--d,0s) + .25s)}
+.ico svg{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+[data-anim].in .ico{opacity:1;transform:none}
+
+/* карточки */
+.grid{display:grid;gap:1.3rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:1.7rem;transition:transform .3s,box-shadow .3s,border-color .3s}
+.card:hover{transform:translateY(-8px);border-color:var(--pink);box-shadow:0 18px 36px color-mix(in srgb,var(--pink) 28%,transparent)}
+.card:hover .ico{transform:rotate(-10deg) scale(1.08)}
+.card p{margin:0;color:var(--muted)}
+
+/* тарифы */
+.price-card{display:flex;flex-direction:column;position:relative}
+.best{background:var(--pink);border-color:var(--pink)}
+.badge{position:absolute;top:-14px;left:1.6rem;background:var(--dark);color:var(--light);font:800 .82rem var(--sans);padding:.3rem .9rem;border-radius:999px}
+.price{font:700 2.6rem var(--head);margin:.1rem 0 0}
+.price small{font:600 .95rem var(--sans);color:var(--muted)}
+.price-card ul{list-style:none;padding:0;margin:1.2rem 0 1.6rem;display:grid;gap:.7rem;flex:1}
+.price-card li{display:flex;gap:.7rem;align-items:center;color:var(--muted);font-weight:600}
+.price-card li::before{content:"";flex:none;width:22px;height:22px;border-radius:50%;background:var(--pink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M6.5 11.3l3 3 6-6.6' fill='none' stroke='%232a1258' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat}
+.best li::before{background-color:var(--dark);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M6.5 11.3l3 3 6-6.6' fill='none' stroke='%23ff5ca8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+
+/* истории */
+.stories{display:grid;gap:1.5rem;align-items:center}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.ba figure{margin:0;position:relative;border-radius:26px;overflow:hidden;background:var(--card);border:1px solid var(--line);display:grid;place-items:end center;height:270px;color:var(--muted)}
+.ba figure.after{color:var(--fg);background:radial-gradient(circle at 50% 100%,color-mix(in srgb,var(--pink) 55%,var(--light)),var(--card) 75%)}
+.ba svg{height:250px;width:auto}
+.ba figcaption{position:absolute;top:.8rem;left:.8rem;background:var(--light);color:var(--dark);font-weight:800;font-size:.85rem;padding:.25rem .85rem;border-radius:999px}
+.after figcaption{background:var(--pink)}
+.vcard video{border-radius:26px;border:4px solid var(--dark)}
+.vcard p{margin:.7rem 0 0;font-weight:700}
+.disclaimer{font-size:.85rem;color:var(--muted);margin:.8rem 0 0}
+blockquote{margin:2.2rem 0 0;padding:2.2rem;border-radius:30px;background:var(--dark);color:var(--light);position:relative;overflow:hidden}
+blockquote .deco{width:190px;right:-50px;bottom:-60px;color:var(--pink);opacity:.35}
+blockquote p{position:relative;font:700 1.5rem/1.35 var(--head);margin:0 0 .7rem;max-width:44ch}
+blockquote cite{position:relative;font-style:normal;font-size:.92rem;color:var(--pink);font-weight:800}
+
+/* контакты */
+.contact-grid{display:grid;gap:2rem;align-items:start}
+details{background:var(--card);border:1px solid var(--line);border-radius:18px;margin-bottom:.7rem;transition:border-color .2s}
+details[open]{border-color:var(--pink)}
+summary{cursor:pointer;list-style:none;padding:1rem 1.3rem;font-weight:800;display:flex;justify-content:space-between;gap:1rem;align-items:center;min-height:54px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:600 1.7rem var(--sans);color:var(--pink);transition:transform .25s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 1.3rem 1.1rem;margin:0;color:var(--muted)}
+.contact-card{display:grid;gap:1rem;position:relative;overflow:hidden}
+.contact-card>*{position:relative}
+.contact-card .deco{width:150px;right:-40px;bottom:-40px;color:var(--dark);opacity:.18}
+.mail{font-weight:800}
+.social{display:flex;gap:.7rem}
+.social a{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--ico-bg);color:var(--ico-fg);transition:transform .25s}
+.social a:hover{transform:translateY(-4px) rotate(-8deg)}
+.social svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+
+/* подвал */
+footer.layer{padding-bottom:2rem}
+.foot{display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between}
+.foot nav{display:flex;flex-direction:column}
+.foot nav a{padding:.4rem 0;font-weight:700;text-decoration:none}
+.foot nav a:hover{text-decoration:underline}
+.stores{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1rem}
+.store{display:flex;flex-direction:column;min-width:150px;min-height:52px;justify-content:center;padding:.5rem 1.1rem;border-radius:14px;background:var(--dark);color:var(--light);text-decoration:none;line-height:1.2;transition:transform .25s}
+.store:hover{transform:translateY(-3px)}
+.store small{font-size:.7rem;opacity:.8}.store b{font-size:1.05rem}
+.legal{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line);font-size:.88rem;font-weight:600}
+.legal p{margin:.2rem 0}
+footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
+
+/* анимация при прокрутке (работает и вверх, и вниз) */
+[data-anim]{opacity:0;transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1),rotate .3s ease-out,box-shadow .3s,border-color .3s;transition-delay:var(--d,0s),var(--d,0s),0s,0s,0s}
+[data-anim=up]{transform:translateY(56px)}
+[data-anim=left]{transform:translateX(-80px)}
+[data-anim=right]{transform:translateX(80px)}
+[data-anim=zoom]{transform:scale(.88) translateY(30px)}
+[data-anim].in{opacity:1;transform:none}
+
+/* адаптив */
+@media (max-width:859px){
+  .burger{display:grid}.pill{display:none}
+  .menu{position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;background:var(--bg);padding:.8rem 1.25rem 1.2rem;border-bottom:2px solid var(--fg);display:none}
+  .menu.open{display:flex}
+  .menu a.link,.menu .btn{min-height:48px;display:flex;align-items:center}
+  .menu .btn{justify-content:center}
+  .stage{box-shadow:7px 7px 0 var(--pink);border-width:4px}
+}
+@media (min-width:600px){.cols{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:860px){
+  .cols{grid-template-columns:repeat(4,1fr)}
+  .three{grid-template-columns:repeat(3,1fr)}
+  .stories{grid-template-columns:1fr 1fr}
+  .contact-grid{grid-template-columns:1.1fr .9fr}
+}
+@media (max-width:420px){.ba{grid-template-columns:1fr}}
+.menu a.link,.price-card li,.price small,.legal{font-weight:700}
+/* цветы: чем шире окно, тем их больше */
+.xf{display:none;position:absolute;z-index:0;pointer-events:none;width:clamp(90px,9vw,190px);color:var(--pink);opacity:.3;animation:spin 80s linear infinite}
+.t-pink .xf{color:var(--dark);opacity:.16}
+@media (min-width:700px){.xf.a{display:block}}
+@media (min-width:1100px){.xf.b{display:block}}
+@media (min-width:1500px){.xf.c,.xf.d{display:block}}
+@media (max-width:860px){.d1,.d2{display:none}}
+@media (max-width:700px){.layer>.deco{display:none}}
+/* объёмные карточки: наклон и подсветка за курсором */
+.grid,.contact-grid{perspective:1100px}
+.card{position:relative}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--pink) 24%,transparent),transparent 70%)}
+.card:hover::before{opacity:1}
+/* блик на кнопках */
+.btn{position:relative;overflow:hidden}
+.btn::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,color-mix(in srgb,var(--light) 45%,transparent),transparent);transform:skewX(-20deg);transition:left .7s}
+.btn:hover::after{left:130%}
+/* заголовок: буквы поднимаются по очереди */
+.w{display:inline-block;white-space:nowrap}
+.ch{display:inline-block;opacity:0;transform:translateY(.9em) rotate(8deg);animation:rise .8s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.3s + var(--i)*30ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ch{opacity:1;transform:none}}
+/* размытые границы секций */
+.soft{border-radius:0;margin-top:0;padding-top:calc(var(--pad) + 130px)}
+.from-dark{--prev:var(--dark)}.from-light{--prev:var(--light)}
+.soft::before{content:"";position:absolute;inset:0 0 auto;height:clamp(150px,22vw,260px);z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--prev) 0,color-mix(in srgb,var(--prev) 92%,transparent) 14%,color-mix(in srgb,var(--prev) 72%,transparent) 32%,color-mix(in srgb,var(--prev) 45%,transparent) 52%,color-mix(in srgb,var(--prev) 20%,transparent) 74%,transparent 100%);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(to bottom,#000 0,rgba(0,0,0,.9) 14%,rgba(0,0,0,.68) 32%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.18) 74%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0,rgba(0,0,0,.9) 14%,rgba(0,0,0,.68) 32%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.18) 74%,transparent 100%)}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  [data-anim],.ico{opacity:1;transform:none}
+  [data-parallax]{translate:none}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="pg" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="flower" viewBox="0 0 100 100"><g fill="currentColor" fill-opacity=".55"><ellipse cx="50" cy="26" rx="12" ry="24"/><ellipse cx="50" cy="26" rx="12" ry="24" transform="rotate(60 50 50)"/><ellipse cx="50" cy="26" rx="12" ry="24" transform="rotate(120 50 50)"/><ellipse cx="50" cy="26" rx="12" ry="24" transform="rotate(180 50 50)"/><ellipse cx="50" cy="26" rx="12" ry="24" transform="rotate(240 50 50)"/><ellipse cx="50" cy="26" rx="12" ry="24" transform="rotate(300 50 50)"/></g><circle cx="50" cy="50" r="11" fill="currentColor"/></symbol>
+  <symbol id="flower2" viewBox="0 0 200 200"><defs><path id="pa" d="M100 100C76 78 78 38 100 6C122 38 124 78 100 100z"/><path id="pb" d="M100 100C87 86 88 62 100 42C112 62 113 86 100 100z"/></defs><g fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><use href="#pa"/><use href="#pa" transform="rotate(30 100 100)"/><use href="#pa" transform="rotate(60 100 100)"/><use href="#pa" transform="rotate(90 100 100)"/><use href="#pa" transform="rotate(120 100 100)"/><use href="#pa" transform="rotate(150 100 100)"/><use href="#pa" transform="rotate(180 100 100)"/><use href="#pa" transform="rotate(210 100 100)"/><use href="#pa" transform="rotate(240 100 100)"/><use href="#pa" transform="rotate(270 100 100)"/><use href="#pa" transform="rotate(300 100 100)"/><use href="#pa" transform="rotate(330 100 100)"/></g><g fill="currentColor" fill-opacity=".6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><use href="#pb" transform="rotate(15 100 100)"/><use href="#pb" transform="rotate(60 100 100)"/><use href="#pb" transform="rotate(105 100 100)"/><use href="#pb" transform="rotate(150 100 100)"/><use href="#pb" transform="rotate(195 100 100)"/><use href="#pb" transform="rotate(240 100 100)"/><use href="#pb" transform="rotate(285 100 100)"/><use href="#pb" transform="rotate(330 100 100)"/></g><circle cx="100" cy="100" r="30" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="1 9.4" stroke-linecap="round"/><circle cx="100" cy="100" r="20" fill="currentColor"/><circle cx="100" cy="100" r="9" fill="var(--light)"/></symbol>
+  <symbol id="p-stand" viewBox="0 0 120 160"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="24" r="10" fill="currentColor" stroke="none"/><path d="M68 18q14 4 9 22M60 40V94M60 52L40 80M60 52L80 80M60 94L46 148M60 94L74 148"/></g></symbol>
+  <symbol id="p-slouch" viewBox="0 0 120 160"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><circle cx="78" cy="34" r="10" fill="currentColor" stroke="none"/><path d="M86 30q12 8 6 22M68 48Q48 70 58 94M64 60L46 86M64 60L84 84M58 94L46 148M58 94L72 148"/></g></symbol>
+  <symbol id="p-squat" viewBox="0 0 120 160"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><circle cx="68" cy="36" r="10" fill="currentColor" stroke="none"/><path d="M60 32q-14 0-18 18M46 90L60 54M62 58L102 60M46 90L88 94L80 144L98 144"/><path d="M28 152H114" opacity=".3"/></g></symbol>
+  <symbol id="p-yoga" viewBox="0 0 120 160"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="26" r="10" fill="currentColor" stroke="none"/><path d="M68 20q14 4 9 22M60 42V94M60 54L42 28M60 54L78 28M60 94V148M60 100L86 122L62 132"/><path d="M24 152H96" opacity=".3"/></g></symbol>
+</svg>
+
+<header class="t-dark">
+  <div class="wrap bar">
+    <a class="logo" href="#top" aria-label="Техника смелости — на главную"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>Техника смелости</a>
+    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <nav class="menu" id="menu" aria-label="Основная навигация">
+      <a class="link" href="#about">Как работает</a>
+      <a class="link" href="#pricing">Тарифы</a>
+      <a class="link" href="#login">Войти</a><!-- заменить -->
+      <a class="btn" href="#download">Скачать приложение</a><!-- заменить -->
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero t-dark">
+    <svg class="deco d1" data-parallax="0.06" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <svg class="deco d2" data-parallax="0.12" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <svg class="deco d3" data-parallax="0.09" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <div class="wrap">
+      <div class="emblem" data-anim="zoom"><svg viewBox="0 0 200 200" aria-hidden="true"><use href="#flower2"/></svg><span>Техника смелости</span></div>
+      <h1 class="quote" data-anim="up" style="--d:.1s"><span class="l1">Смелость — это техника.</span><span class="l2">Ей можно научиться.</span></h1>
+      
+      <p class="lead" data-anim="up" style="--d:.2s">ИИ-тренер в телефоне следит за техникой и бережёт от травм.</p>
+      <div class="btn-row" data-anim="up" style="--d:.3s">
+        <a class="btn" href="#download">Скачать приложение</a>
+        <a class="btn btn-ghost" href="#about">Как это работает</a>
+      </div>
+      
+    </div>
+  </section>
+
+  <section class="band layer t-pink" aria-hidden="true"><div class="row" data-dir="-1"></div><div class="row alt" data-dir="1"></div></section>
+
+  <section id="about" class="layer t-dark">
+    <svg class="deco" data-parallax="0.08" style="width:260px;right:-80px;top:40px;color:var(--pink);opacity:.25" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <div class="wrap">
+      <div class="sec-head center" data-anim="up"><h2>Фитнес без страха</h2><p class="lead" style="margin-inline:auto">ИИ видит движения через камеру и бережёт от травм. Как тренер, который всегда рядом.</p></div>
+      <div class="grid three">
+        <article class="card" data-anim="left"><div class="ico"><svg viewBox="0 0 48 48"><rect x="5" y="13" width="38" height="26" rx="6"/><circle cx="24" cy="26" r="7"/><path d="M16 13l3-5h10l3 5"/></svg></div><h3>Камера видит</h3><p>Поставьте телефон на пол. Всё тело в кадре.</p></article>
+        <article class="card" data-anim="up" style="--d:.15s"><div class="ico"><svg viewBox="0 0 48 48"><path d="M22 6l4 11 11 4-11 4-4 11-4-11-11-4 11-4z"/><path d="M38 30v8M34 34h8"/></svg></div><h3>ИИ считает углы</h3><p>Сравнивает позу с безопасной техникой.</p></article>
+        <article class="card" data-anim="right" style="--d:.3s"><div class="ico"><svg viewBox="0 0 48 48"><path d="M8 10h32v22H20l-9 8v-8H8z"/><path d="M16 21l5 5 10-9"/></svg></div><h3>Подсказка в ухо</h3><p>Голос поправит движение прямо в подходе.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="benefits" class="layer soft from-dark t-light">
+    <svg class="deco" data-parallax="0.10" style="width:200px;left:-70px;top:30px;color:var(--pink);opacity:.5" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <div class="wrap">
+      <div class="sec-head" data-anim="up"><h2>Почему с нами спокойно</h2></div>
+      <div class="grid cols">
+        <article class="card" data-anim="up"><div class="ico"><svg viewBox="0 0 48 48"><path d="M8 40h32M8 40L30 10M24 40A16 16 0 0 0 17.5 27"/></svg></div><h3>Контроль углов</h3><p>Предупредим о рискованном движении.</p></article>
+        <article class="card" data-anim="up" style="--d:.12s"><div class="ico"><svg viewBox="0 0 48 48"><path d="M24 40S6 29 6 17a9 9 0 0 1 18-2 9 9 0 0 1 18 2c0 12-18 23-18 23z"/><path d="M12 24h8l3-6 4 10 3-4h6"/></svg></div><h3>Под вас</h3><p>План учитывает уровень и самочувствие.</p></article>
+        <article class="card" data-anim="up" style="--d:.24s"><div class="ico"><svg viewBox="0 0 48 48"><path d="M12 18v12M8 21v6M36 18v12M40 21v6M12 24h24M6 42L42 6"/></svg></div><h3>Без инвентаря</h3><p>Нужен только коврик.</p></article>
+        <article class="card" data-anim="up" style="--d:.36s"><div class="ico"><svg viewBox="0 0 48 48"><path d="M24 5l14 5v11c0 9-6 16-14 20-8-4-14-11-14-20V10z"/><rect x="18" y="22" width="12" height="9" rx="2"/><path d="M20 22v-3a4 4 0 0 1 8 0v3"/></svg></div><h3>Только вы и ИИ</h3><p>Видео обрабатывается на устройстве.</p><!-- проверить формулировку --></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="layer t-dark">
+    <svg class="deco" data-parallax="0.07" style="width:240px;right:-80px;bottom:30px;color:var(--pink);opacity:.22" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <div class="wrap">
+      <div class="sec-head" data-anim="up"><h2>Выберите тариф</h2></div>
+      <!-- заменить на реальные цены и состав -->
+      <div class="grid three">
+        <article class="card price-card" data-anim="up"><h3>Free</h3><div class="price">0 ₽ <small>демо</small></div><ul><li>3 тренировки</li><li>Базовые подсказки</li></ul><a class="btn btn-ghost btn-block" href="#download">Выбрать Free</a></article>
+        <article class="card price-card best t-pink" data-anim="up" style="--d:.15s"><span class="badge">Выбор большинства</span><h3>Premium</h3><div class="price">790 ₽ <small>/ мес</small></div><ul><li>Полный ИИ-контроль</li><li>Личный план</li><li>Отчёты о прогрессе</li></ul><a class="btn btn-block" href="#download">Выбрать Premium</a></article>
+        <article class="card price-card" data-anim="up" style="--d:.3s"><h3>Premium + Expert</h3><div class="price">1 990 ₽ <small>/ мес</small></div><ul><li>Всё из Premium</li><li>Живой нутрициолог</li><li>Чат с экспертом</li></ul><a class="btn btn-ghost btn-block" href="#download">Выбрать Expert</a></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="stories" class="layer soft from-dark t-light">
+    <div class="wrap">
+      <div class="sec-head" data-anim="up"><h2>Меняется осанка — растёт уверенность</h2></div>
+      <div class="stories">
+        <div data-anim="left">
+          <div class="ba" role="group" aria-label="Иллюстрация: осанка до и после">
+            <!-- заменить на реальные скриншоты с согласия пользовательниц -->
+            <figure><figcaption>До</figcaption><svg viewBox="0 0 120 160" role="img" aria-label="Фигура с наклонённым вперёд корпусом"><path d="M60 8V152" stroke="#ff5ca8" stroke-dasharray="4 6" stroke-width="2"/><use href="#p-slouch"/></svg></figure>
+            <figure class="after"><figcaption>После</figcaption><svg viewBox="0 0 120 160" role="img" aria-label="Фигура с ровной спиной"><path d="M60 8V152" stroke="#ff5ca8" stroke-dasharray="4 6" stroke-width="2"/><use href="#p-stand"/></svg></figure>
+          </div>
+          <p class="disclaimer">Иллюстрация. Результаты индивидуальны.</p>
+        </div>
+        <div class="vcard" data-anim="right">
+          <!-- заменить: видео «Как ИИ исправил мою осанку» -->
+          <video controls playsinline preload="metadata" data-pose="p-yoga" aria-label="Как ИИ исправил мою осанку"><source src="video/posture-story.mp4" type="video/mp4"><track kind="captions" srclang="ru" label="Русский"></video>
+          <p>Как ИИ исправил мою осанку</p>
+        </div>
+      </div>
+      <blockquote data-anim="zoom">
+        <svg class="deco" data-parallax="0.05" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+        <!-- заменить на реальную цитату и имя врача, с его согласия -->
+        <p>«Контроль техники помогает бережнее нагружать суставы. Особенно важно это для женской биомеханики.» (текст-заглушка)</p>
+        <cite>[Имя Фамилия, специальность]</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section id="contacts" class="layer t-dark">
+    <div class="wrap contact-grid">
+      <div data-anim="left">
+        <h2>Вопросы и ответы</h2>
+        <details><summary>Нужен ли инвентарь?</summary><p>Нет, достаточно коврика и телефона.</p></details>
+        <details><summary>Я новичок. Подойдёт?</summary><p>Да, нагрузка подбирается под ваш уровень.</p></details>
+        <details><summary>Где хранится видео?</summary><p>Обработка идёт на вашем устройстве (заглушка, уточните формулировку).</p></details>
+        <details><summary>Как отменить подписку?</summary><p>В настройках приложения в любой момент.</p></details>
+      </div>
+      <div class="card contact-card t-pink" data-anim="right">
+        <svg class="deco" data-parallax="0.11" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+        <h3>Мы на связи</h3>
+        <a class="btn" href="#chat">Чат поддержки</a><!-- заменить -->
+        <a class="mail" href="mailto:business@example.com">business@example.com</a><!-- заменить -->
+        <div class="social">
+          <a href="#telegram" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l6 2 2 6 3-4 5 3z"/></svg></a>
+          <a href="#instagram" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/></svg></a>
+          <a href="#youtube" aria-label="YouTube"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="4"/><path d="M10 9.5v5l4.5-2.5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="download" class="layer t-pink">
+  <svg class="deco" data-parallax="0.06" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="logo" href="#top"><svg viewBox="0 0 100 100" aria-hidden="true" style="color:var(--dark)"><use href="#flower"/></svg>Техника смелости</a>
+        <div class="stores">
+          <a class="store" href="#appstore"><small>Загрузите в</small><b>App Store</b></a><!-- заменить -->
+          <a class="store" href="#googleplay"><small>Доступно в</small><b>Google Play</b></a><!-- заменить -->
+        </div>
+      </div>
+      <nav aria-label="Дополнительные ссылки"><a href="#blog">Блог</a><a href="#privacy">Политика конфиденциальности</a></nav>
+    </div>
+    <div class="legal"><p>© 2026 «Техника смелости»</p><p>Приложение не заменяет консультацию врача. Результаты индивидуальны.</p></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var b=document.getElementById('burger'),m=document.getElementById('menu');
+  function set(o){m.classList.toggle('open',o);b.setAttribute('aria-expanded',o);b.setAttribute('aria-label',o?'Закрыть меню':'Открыть меню')}
+  b.addEventListener('click',function(){set(!m.classList.contains('open'))});
+  m.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)});
+
+  // постеры видео из фигур
+  document.querySelectorAll('video[data-pose]').forEach(function(v){
+    var s=document.getElementById(v.dataset.pose).innerHTML;
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a1258"/><stop offset="1" stop-color="#ff5ca8"/></linearGradient></defs><rect width="16" height="9" fill="url(#g)"/><circle cx="13.2" cy="2" r="1.5" fill="#f7f0ff" opacity=".14"/><circle cx="2.6" cy="7" r="1.1" fill="#f7f0ff" opacity=".14"/><svg x="5.4" y=".4" width="5.4" height="7.2" viewBox="0 0 120 160" color="#f7f0ff">'+s+'</svg><circle cx="8" cy="8.1" r=".45" fill="#f7f0ff"/></svg>';
+    v.poster='data:image/svg+xml,'+encodeURIComponent(svg);
+  });
+
+  // лента слов: движется вслед за прокруткой в обе стороны
+  var words=['Уверенность','Сила','Техника','Смелость'];
+  document.querySelectorAll('.row').forEach(function(r,k){
+    var h='';for(var i=0;i<20;i++){h+='<span>'+words[(i+k*2)%4]+'</span><svg viewBox="0 0 100 100"><use href="#flower"/></svg>'}
+    r.innerHTML=h;
+  });
+  var still=matchMedia('(prefers-reduced-motion: reduce)').matches,tick=false;
+  function move(){
+    tick=false;if(still)return;drift();
+    document.querySelectorAll('.row').forEach(function(r){
+      var q=r.parentNode.getBoundingClientRect(),p=(innerHeight-q.top)/(innerHeight+q.height),d=Math.min(900,innerWidth*1.1);
+      r.style.transform='translate3d('+((p-.5)*d*r.dataset.dir)+'px,0,0)';
+    });
+  }
+
+  // появление при прокрутке: повторяется и вниз, и вверх
+  var els=document.querySelectorAll('[data-anim]');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.intersectionRatio>=.15)e.target.classList.add('in');
+      else if(!e.isIntersecting)e.target.classList.remove('in');
+    })},{threshold:[0,.15]});
+    els.forEach(function(el){io.observe(el)});
+  }else{els.forEach(function(el){el.classList.add('in')})}
+
+  // навигация: «плавающая» подсветка и подсветка текущего раздела
+  var pill=document.createElement('span');pill.className='pill';pill.setAttribute('aria-hidden','true');m.insertBefore(pill,m.firstChild);
+  var lk=[].slice.call(m.querySelectorAll('a.link')),act=null;
+  function place(a){if(!a||innerWidth<860){pill.style.opacity=0;return}pill.style.left=a.offsetLeft+'px';pill.style.width=a.offsetWidth+'px';pill.style.opacity=1}
+  lk.forEach(function(a){a.addEventListener('mouseenter',function(){place(a)});a.addEventListener('focus',function(){place(a)})});
+  m.addEventListener('mouseleave',function(){place(act)});m.addEventListener('focusout',function(){place(act)});
+  function spy(){var y=innerHeight*.4,n=null;lk.forEach(function(a){var s=document.querySelector(a.getAttribute('href'));if(s&&s.id){var r=s.getBoundingClientRect();if(r.top<y&&r.bottom>y)n=a}});if(n!==act){act=n;lk.forEach(function(a){a.classList.toggle('on',a===act)});place(act)}}
+  addEventListener('scroll',spy,{passive:true});addEventListener('resize',spy);spy();
+
+  // заголовок: разбиваем на буквы для анимации
+  var q=document.querySelector('.quote');
+  if(q){var sp=[].slice.call(q.querySelectorAll(':scope>span')),n=0;q.setAttribute('aria-label',sp.map(function(s){return s.textContent}).join(' '));
+    sp.forEach(function(s){s.setAttribute('aria-hidden','true');s.innerHTML=s.textContent.split(' ').map(function(w){return '<span class="w">'+w.split('').map(function(c){return '<span class="ch" style="--i:'+(n++)+'">'+c+'</span>'}).join('')+'</span>'}).join(' ')})}
+
+  // дополнительные цветы: на широком экране их больше (видимость задаёт CSS)
+  document.querySelectorAll('.hero,.layer:not(.band)').forEach(function(s,i){
+    [['a','right:-2.5vw'],['b','left:-3vw'],['c','left:calc(50% - 760px)'],['d','right:calc(50% - 760px)']].forEach(function(p,k){
+      var big=k%2===0,f=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      f.setAttribute('viewBox',big?'0 0 200 200':'0 0 100 100');f.setAttribute('aria-hidden','true');f.setAttribute('class','xf '+p[0]);
+      f.style.cssText=p[1]+';top:'+(6+(i*43+k*29)%66)+'%'+(k%2?';animation-direction:reverse':'');
+      f.setAttribute('data-parallax',String(.05+(i*7+k*5)%4*.03));
+      f.innerHTML='<use href="'+(big?'#flower2':'#flower')+'"/>';
+      s.insertBefore(f,s.firstChild);
+    });
+  });
+
+  // параллакс: элементы с data-parallax получают класс .parallax и смещаются с разной скоростью
+  var fl=[].slice.call(document.querySelectorAll('[data-parallax]'));
+  function drift(){
+    if(still)return;
+    fl.forEach(function(f){
+      var r=f.parentNode.getBoundingClientRect(),d=r.top+r.height/2-innerHeight/2;
+      var sp=parseFloat(f.dataset.parallax)||.06;
+      f.classList.toggle('parallax',r.bottom>-innerHeight&&r.top<innerHeight*2);
+      f.style.translate='0 '+(-d*sp).toFixed(1)+'px';
+    });
+  }
+
+  // наклон карточек за курсором
+  if(matchMedia('(hover:hover)').matches&&!still){
+    document.querySelectorAll('.card').forEach(function(c){
+      c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5,a=Math.hypot(x,y)*14;
+        c.style.setProperty('--mx',(x+.5)*100+'%');c.style.setProperty('--my',(y+.5)*100+'%');
+        c.style.rotate=a>.3?(-y)+' '+x+' 0 '+a+'deg':'none'});
+      c.addEventListener('pointerleave',function(){c.style.rotate='none'});
+    });
+  }
+
+  // шапка меняет цвет под фон раздела: тёмная на светлом и наоборот
+  var hd=document.querySelector('header'),secs=[].slice.call(document.querySelectorAll('main>section,footer')),cur='t-dark';
+  function theme(){var y=34,t=cur;secs.forEach(function(s){var r=s.getBoundingClientRect();if(r.top<=y&&r.bottom>y)t=s.classList.contains('t-pink')?'t-pink':s.classList.contains('t-light')?'t-light':'t-dark'});if(t!==cur){hd.classList.remove(cur);hd.classList.add(t);cur=t}}
+  addEventListener('scroll',theme,{passive:true});theme();
+
+  var pg=document.getElementById('pg'),h=document.documentElement;
+  addEventListener('scroll',function(){
+    var t=h.scrollHeight-h.clientHeight;pg.style.transform='scaleX('+(t>0?h.scrollTop/t:0)+')';
+    if(!tick){tick=true;requestAnimationFrame(move)}
+  },{passive:true});
+  addEventListener('resize',move);move();
+})();
+</script>
+</body>
+</html>
