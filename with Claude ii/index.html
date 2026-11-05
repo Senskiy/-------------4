@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Philosopher:wght@700&display=swap" rel="stylesheet">
 <style>
 /* Только три цвета: тёмный сливовый, розовый, светлая сирень */
-:root{--dark:#2a1258;--pink:#ff5ca8;--light:#f7f0ff;
+:root{--dark:#2a1258;--header:#1a0a3a;--pink:#ff5ca8;--light:#f7f0ff;
   --head:"Philosopher",Georgia,"Times New Roman",serif;--sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --pad:clamp(3rem,7vw,5.5rem);--cut:36px;--r-s:16px;--r-m:26px;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -49,8 +49,8 @@ a{color:inherit}
 .btn-mini{min-height:44px;padding:.4rem 1rem;margin-left:auto}
 @media (min-width:860px){.btn-mini{display:none}}
 
-/* шапка */
-header,header.t-dark,header.t-light,header.t-pink{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:background .4s,color .4s}
+/* шапка: однотонная, основной цвет сайта, но темнее */
+header,header.t-dark,header.t-light,header.t-pink{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--header)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:68px}
 .logo{display:flex;align-items:center;gap:.6rem;font:700 1.35rem var(--head);text-decoration:none}
 .logo svg{width:36px;height:36px;color:var(--pink);flex:none;transition:transform .6s}
@@ -63,8 +63,9 @@ header,header.t-dark,header.t-light,header.t-pink{position:sticky;top:env(safe-a
 .burger{display:none;width:48px;height:48px;border-radius:var(--r-s);border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;place-items:center}
 .burger svg{width:22px;height:22px}
 
-/* hero */
-.hero{padding:clamp(2rem,5vw,3.5rem) 0 calc(var(--pad) + var(--cut) + 1rem);text-align:center;position:relative;overflow:clip}
+/* hero: контент по центру экрана при открытии сайта */
+.hero{display:flex;align-items:center;min-height:calc(100svh - 68px);padding:clamp(2rem,5vw,3.5rem) 0 calc(var(--pad) + var(--cut) + 1rem);text-align:center;position:relative;overflow:clip}
+.hero .wrap{width:min(1160px,100% - 2.5rem)}
 .quote{font-size:clamp(2.4rem,6.4vw,4.8rem);line-height:1.02;letter-spacing:-.02em;max-width:20ch;margin:0 auto .4em;text-wrap:balance}
 .quote>span{display:block}.l1{color:var(--light)}.l2{color:var(--pink);text-shadow:0 0 44px color-mix(in srgb,var(--pink) 45%,transparent)}
 .emblem{display:grid;justify-items:center;gap:.5rem;margin-bottom:1.6rem}
@@ -195,7 +196,7 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
 .t-pink .xf{color:var(--pink);opacity:.16}
 @media (min-width:700px){.xf.a{display:block}}
 @media (min-width:1100px){.xf.b{display:block}}
-@media (min-width:1500px){.xf.c,.xf.d{display:block}}
+@media (min-width:1400px){.xf.c,.xf.d{display:block}}
 @media (max-width:860px){.d1,.d2{display:none}}
 @media (max-width:700px){.layer>.deco{display:none}}
 /* объёмные карточки: наклон и подсветка за курсором */
@@ -212,10 +213,8 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
 .ch{display:inline-block;opacity:0;transform:translateY(.9em) rotate(8deg);animation:rise .8s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.3s + var(--i)*30ms)}
 @keyframes rise{to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.ch{opacity:1;transform:none}}
-/* размытые границы секций */
-.soft{border-radius:0;margin-top:0;padding-top:calc(var(--pad) + 130px)}
-.from-dark{--prev:var(--dark)}.from-light{--prev:var(--light)}
-.soft::before{content:"";position:absolute;inset:0 0 auto;height:clamp(150px,22vw,260px);z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--prev) 0,color-mix(in srgb,var(--prev) 92%,transparent) 14%,color-mix(in srgb,var(--prev) 72%,transparent) 32%,color-mix(in srgb,var(--prev) 45%,transparent) 52%,color-mix(in srgb,var(--prev) 20%,transparent) 74%,transparent 100%);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(to bottom,#000 0,rgba(0,0,0,.9) 14%,rgba(0,0,0,.68) 32%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.18) 74%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0,rgba(0,0,0,.9) 14%,rgba(0,0,0,.68) 32%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.18) 74%,transparent 100%)}
+/* чёткая граница между секциями (без размытия) */
+.soft{border-radius:0;margin-top:0;padding-top:calc(var(--pad) + var(--cut))}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -252,7 +251,6 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
   <section class="hero t-dark">
     <svg class="deco d1" data-parallax="0.06" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
     <svg class="deco d2" data-parallax="0.12" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
-    <svg class="deco d3" data-parallax="0.09" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
     <div class="wrap">
       <div class="emblem" data-anim="zoom"><svg viewBox="0 0 200 200" aria-hidden="true"><use href="#flower2"/></svg></div>
       <h1 class="quote" data-anim="up" style="--d:.1s"><span class="l1">Смелость — это техника.</span><span class="l2">Ей можно научиться.</span></h1>
@@ -423,10 +421,10 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
 
   // дополнительные цветы: на широком экране их больше (видимость задаёт CSS)
   document.querySelectorAll('.hero,.layer').forEach(function(s,i){
-    [['a','right:2vw'],['b','left:2vw'],['c','left:max(28px,calc(50% - 760px))'],['d','right:max(28px,calc(50% - 760px))']].forEach(function(p,k){
+    [['a','right:-2vw',(7+(i*31)%20)+'%'],['b','left:-2vw',(12+(i*29)%20)+'%'],['c','left:-2vw',(61+(i*23)%20)+'%'],['d','right:-2vw',(65+(i*19)%18)+'%']].forEach(function(p,k){
       var big=k%2===0,f=document.createElementNS('http://www.w3.org/2000/svg','svg');
       f.setAttribute('viewBox',big?'0 0 200 200':'0 0 100 100');f.setAttribute('aria-hidden','true');f.setAttribute('class','xf '+p[0]);
-      f.style.cssText=p[1]+';top:'+(6+(i*43+k*29)%66)+'%'+(k%2?';animation-direction:reverse':'')
+      f.style.cssText=p[1]+';top:'+p[2]+(k%2?';animation-direction:reverse':'')
         +';color:'+(k%2?'var(--fg)':'var(--pink)')+';opacity:'+(.1+k*.06).toFixed(2)
         +';width:calc(clamp(90px,9vw,190px)*'+[1,1.3,.72,1.05][k]+')';
       f.setAttribute('data-parallax',String(.05+(i*7+k*5)%4*.03));
@@ -456,11 +454,6 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
       c.addEventListener('pointerleave',function(){c.style.rotate='none'});
     });
   }
-
-  // шапка меняет цвет под фон раздела: тёмная на светлом и наоборот
-  var hd=document.querySelector('header'),secs=[].slice.call(document.querySelectorAll('main>section,footer')),cur='t-dark';
-  function theme(){var y=34,t=cur;secs.forEach(function(s){var r=s.getBoundingClientRect();if(r.top<=y&&r.bottom>y)t=s.classList.contains('t-pink')?'t-pink':s.classList.contains('t-light')?'t-light':'t-dark'});if(t!==cur){hd.classList.remove(cur);hd.classList.add(t);cur=t}}
-  addEventListener('scroll',theme,{passive:true});theme();
 
   var pg=document.getElementById('pg'),h=document.documentElement;
   addEventListener('scroll',function(){
