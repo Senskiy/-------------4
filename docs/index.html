@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Philosopher:wght@700&display=swap" rel="stylesheet">
 <style>
-/* Только три цвета: тёмный сливовый, розовый, светлая сирень */
-:root{--dark:#2a1258;--pink:#ff5ca8;--light:#f7f0ff;
+/* Только три цвета: тёмный сливовый, розовый, светлая сирень и не только */
+:root{--dark:#2a1258;--header:#1a0a3a;--pink:#ff5ca8;--light:#f7f0ff;
   --head:"Philosopher",Georgia,"Times New Roman",serif;--sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --pad:clamp(3rem,7vw,5.5rem);--cut:36px;--r-s:16px;--r-m:26px;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -49,8 +49,8 @@ a{color:inherit}
 .btn-mini{min-height:44px;padding:.4rem 1rem;margin-left:auto}
 @media (min-width:860px){.btn-mini{display:none}}
 
-/* шапка */
-header,header.t-dark,header.t-light,header.t-pink{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:background .4s,color .4s}
+/* шапка: однотонная, основной цвет сайта, но темнее */
+header,header.t-dark,header.t-light,header.t-pink{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--header)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:68px}
 .logo{display:flex;align-items:center;gap:.6rem;font:700 1.35rem var(--head);text-decoration:none}
 .logo svg{width:36px;height:36px;color:var(--pink);flex:none;transition:transform .6s}
@@ -63,12 +63,20 @@ header,header.t-dark,header.t-light,header.t-pink{position:sticky;top:env(safe-a
 .burger{display:none;width:48px;height:48px;border-radius:var(--r-s);border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;place-items:center}
 .burger svg{width:22px;height:22px}
 
-/* hero */
-.hero{padding:clamp(2rem,5vw,3.5rem) 0 calc(var(--pad) + var(--cut) + 1rem);text-align:center;position:relative;overflow:clip}
-.quote{font-size:clamp(2.4rem,6.4vw,4.8rem);line-height:1.02;letter-spacing:-.02em;max-width:20ch;margin:0 auto .4em;text-wrap:balance}
+/* hero: контент по центру экрана при открытии сайта */
+.hero{display:flex;align-items:center;min-height:calc(100svh - 68px);padding:clamp(2rem,5vw,3.5rem) 0 calc(var(--pad) + var(--cut) + 1rem);text-align:center;position:relative;overflow:clip}
+.hero .wrap{width:min(1160px,100% - 2.5rem)}
+/* затемнённое фото-подложка за надписью героя */
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.5) saturate(.85)}
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,color-mix(in srgb,var(--dark) 55%,transparent),color-mix(in srgb,var(--dark) 78%,transparent))}
+.hero-bg~.wrap{z-index:1}
+.quote{font-size:clamp(2.8rem,7.4vw,5.8rem);line-height:1.02;letter-spacing:-.02em;max-width:21ch;margin:0 auto .4em;text-wrap:balance;position:relative}
+/* точечное тёмное пятно прямо за надписью — для контраста */
+.quote::before{content:"";position:absolute;inset:-38% -28%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--header) 95%,transparent),color-mix(in srgb,var(--header) 82%,transparent) 30%,color-mix(in srgb,var(--header) 56%,transparent) 52%,color-mix(in srgb,var(--header) 30%,transparent) 70%,color-mix(in srgb,var(--header) 12%,transparent) 86%,transparent 100%);filter:blur(55px)}
 .quote>span{display:block}.l1{color:var(--light)}.l2{color:var(--pink);text-shadow:0 0 44px color-mix(in srgb,var(--pink) 45%,transparent)}
 .emblem{display:grid;justify-items:center;gap:.5rem;margin-bottom:1.6rem}
-.emblem svg{width:clamp(84px,12vw,110px);color:var(--pink);animation:spin 70s linear infinite;filter:drop-shadow(0 0 24px color-mix(in srgb,var(--pink) 55%,transparent))}
+.emblem svg{width:clamp(104px,15vw,150px);color:var(--pink);animation:spin 70s linear infinite;filter:drop-shadow(0 0 28px color-mix(in srgb,var(--pink) 55%,transparent))}
 .by{font-weight:800;letter-spacing:.03em;margin-bottom:1rem}
 .hero .lead{margin-inline:auto}
 .btn-row{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin:1.5rem 0 0}
@@ -123,7 +131,7 @@ blockquote .deco{width:190px;right:-50px;bottom:-60px;color:var(--pink);opacity:
 blockquote p{position:relative;font:700 1.5rem/1.35 var(--head);margin:0 0 .7rem;max-width:44ch}
 blockquote cite{position:relative;font-style:normal;font-size:.92rem;color:var(--pink);font-weight:800}
 
-/* галерея: ровный квадратный блок — все фото одного размера */
+/* галерея: ровный квадратный блок все фото одного размера */
 .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
 .gallery figure{margin:0;position:relative;border-radius:var(--r-m);overflow:hidden;border:1px solid var(--line);background:var(--card)}
 .gallery img{width:100%;height:100%;display:block;aspect-ratio:1/1;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
@@ -195,9 +203,9 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
 .t-pink .xf{color:var(--pink);opacity:.16}
 @media (min-width:700px){.xf.a{display:block}}
 @media (min-width:1100px){.xf.b{display:block}}
-@media (min-width:1500px){.xf.c,.xf.d{display:block}}
+@media (min-width:1400px){.xf.c,.xf.d{display:block}}
 @media (max-width:860px){.d1,.d2{display:none}}
-@media (max-width:700px){.layer>.deco{display:none}}
+@media (max-width:700px){.layer>.deco,.hside{display:none}}
 /* объёмные карточки: наклон и подсветка за курсором */
 .grid,.contact-grid{perspective:1100px}
 .card{position:relative}
@@ -212,10 +220,8 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
 .ch{display:inline-block;opacity:0;transform:translateY(.9em) rotate(8deg);animation:rise .8s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.3s + var(--i)*30ms)}
 @keyframes rise{to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.ch{opacity:1;transform:none}}
-/* размытые границы секций */
-.soft{border-radius:0;margin-top:0;padding-top:calc(var(--pad) + 130px)}
-.from-dark{--prev:var(--dark)}.from-light{--prev:var(--light)}
-.soft::before{content:"";position:absolute;inset:0 0 auto;height:clamp(150px,22vw,260px);z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--prev) 0,color-mix(in srgb,var(--prev) 92%,transparent) 14%,color-mix(in srgb,var(--prev) 72%,transparent) 32%,color-mix(in srgb,var(--prev) 45%,transparent) 52%,color-mix(in srgb,var(--prev) 20%,transparent) 74%,transparent 100%);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(to bottom,#000 0,rgba(0,0,0,.9) 14%,rgba(0,0,0,.68) 32%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.18) 74%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0,rgba(0,0,0,.9) 14%,rgba(0,0,0,.68) 32%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.18) 74%,transparent 100%)}
+/* чёткая граница между секциями (без размытия) */
+.soft{border-radius:0;margin-top:0;padding-top:calc(var(--pad) + var(--cut))}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -250,9 +256,11 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
 
 <main id="top">
   <section class="hero t-dark">
-    <svg class="deco d1" data-parallax="0.06" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
-    <svg class="deco d2" data-parallax="0.12" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
-    <svg class="deco d3" data-parallax="0.09" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <div class="hero-bg" aria-hidden="true"><img src="bruce-mars-HHXdPG_eTIQ-unsplash.jpg" alt=""></div>
+    <svg class="deco hside" data-parallax="0.06" style="width:160px;left:-55px;top:16%;color:var(--pink);opacity:.3" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
+    <svg class="deco hside" data-parallax="0.1" style="width:110px;left:5%;bottom:9%;color:var(--light);opacity:.14;animation-duration:36s" viewBox="0 0 200 200" aria-hidden="true"><use href="#flower2"/></svg>
+    <svg class="deco hside" data-parallax="0.08" style="width:180px;right:-65px;top:22%;color:var(--pink);opacity:.26;animation-direction:reverse" viewBox="0 0 200 200" aria-hidden="true"><use href="#flower2"/></svg>
+    <svg class="deco hside" data-parallax="0.12" style="width:100px;right:6%;bottom:12%;color:var(--light);opacity:.16;animation-duration:36s" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
     <div class="wrap">
       <div class="emblem" data-anim="zoom"><svg viewBox="0 0 200 200" aria-hidden="true"><use href="#flower2"/></svg></div>
       <h1 class="quote" data-anim="up" style="--d:.1s"><span class="l1">Смелость — это техника.</span><span class="l2">Ей можно научиться.</span></h1>
@@ -358,7 +366,7 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
         <svg class="deco" data-parallax="0.11" viewBox="0 0 100 100" aria-hidden="true"><use href="#flower"/></svg>
         <h3>Мы на связи</h3>
         <a class="btn" href="#chat">Чат поддержки</a><!-- заменить -->
-        <a class="mail" href="mailto:business@example.com">business@example.com</a><!-- заменить -->
+        <a class="mail" href="mailto:business@example.com">businessgym@example.com</a><!-- заменить -->
         <div class="social">
           <a href="#telegram" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l6 2 2 6 3-4 5 3z"/></svg></a>
           <a href="#instagram" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/></svg></a>
@@ -383,7 +391,7 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
       <nav aria-label="Дополнительные ссылки"><a href="#blog">Блог</a><a href="#privacy">Политика конфиденциальности</a></nav>
     </div>
     <div class="legal"><p>© 2026 «Техника смелости»</p><p>Приложение не заменяет консультацию врача. Результаты индивидуальны.</p></div>
-    <p class="credit">Created by Margarita</p>
+    <p class="credit">Created by Margarita M. R. </p>
   </div>
 </footer>
 
@@ -423,10 +431,10 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
 
   // дополнительные цветы: на широком экране их больше (видимость задаёт CSS)
   document.querySelectorAll('.hero,.layer').forEach(function(s,i){
-    [['a','right:2vw'],['b','left:2vw'],['c','left:max(28px,calc(50% - 760px))'],['d','right:max(28px,calc(50% - 760px))']].forEach(function(p,k){
+    [['a','right:-2vw',(7+(i*31)%20)+'%'],['b','left:-2vw',(12+(i*29)%20)+'%'],['c','left:-2vw',(61+(i*23)%20)+'%'],['d','right:-2vw',(65+(i*19)%18)+'%']].forEach(function(p,k){
       var big=k%2===0,f=document.createElementNS('http://www.w3.org/2000/svg','svg');
       f.setAttribute('viewBox',big?'0 0 200 200':'0 0 100 100');f.setAttribute('aria-hidden','true');f.setAttribute('class','xf '+p[0]);
-      f.style.cssText=p[1]+';top:'+(6+(i*43+k*29)%66)+'%'+(k%2?';animation-direction:reverse':'')
+      f.style.cssText=p[1]+';top:'+p[2]+(k%2?';animation-direction:reverse':'')
         +';color:'+(k%2?'var(--fg)':'var(--pink)')+';opacity:'+(.1+k*.06).toFixed(2)
         +';width:calc(clamp(90px,9vw,190px)*'+[1,1.3,.72,1.05][k]+')';
       f.setAttribute('data-parallax',String(.05+(i*7+k*5)%4*.03));
@@ -456,11 +464,6 @@ footer .deco{width:230px;right:-60px;top:20px;color:var(--dark);opacity:.14}
       c.addEventListener('pointerleave',function(){c.style.rotate='none'});
     });
   }
-
-  // шапка меняет цвет под фон раздела: тёмная на светлом и наоборот
-  var hd=document.querySelector('header'),secs=[].slice.call(document.querySelectorAll('main>section,footer')),cur='t-dark';
-  function theme(){var y=34,t=cur;secs.forEach(function(s){var r=s.getBoundingClientRect();if(r.top<=y&&r.bottom>y)t=s.classList.contains('t-pink')?'t-pink':s.classList.contains('t-light')?'t-light':'t-dark'});if(t!==cur){hd.classList.remove(cur);hd.classList.add(t);cur=t}}
-  addEventListener('scroll',theme,{passive:true});theme();
 
   var pg=document.getElementById('pg'),h=document.documentElement;
   addEventListener('scroll',function(){
